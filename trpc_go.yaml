@@ -1,0 +1,66 @@
+global: # Global configuration
+  namespace: Development                # Environment type, divided into two types: "Production" and "Development"
+  env_name: test                    # Environment name, name for non-production environments
+  conf_provider: file        # Configuration storage method for routes, plugins, etc., supports file, etcd, consul etc.
+
+server:
+  app: trpc                                       # Application name for the business
+  server: gateway                                 # Process service name
+  bin_path: /usr/local/trpc/bin/                  # Path to binary executable files and framework configuration files
+  conf_path: /usr/local/trpc/conf/                # Path to business configuration files
+  data_path: /usr/local/trpc/data/                # Path to data files
+  filter: # Global filters are configured here, all interfaces will execute these filters. trpc-go filters are placed here.
+  admin:
+    ip: 0.0.0.0      # IP address, can be local_ip or trpc_admin_ip
+    port: 8880       # Port
+    read_timeout: 3000   # ms. Timeout for reading the complete request information after the request is accepted, to prevent slow clients
+    write_timeout: 60000 # ms. Timeout for processing
+  service: # Services provided by the business, can have multiple services
+    - name: trpc.gateway.service   # Routing name for the service, please replace ReplaceMe with your own service name, do not change the app server placeholder
+      network: tcp                    # Network listening type: tcp or udp
+      protocol: fasthttp              # Application layer protocol: trpc or http
+      timeout: 1000                   # Maximum processing time for requests, in milliseconds
+      registry: polaris               # Service registration method used when starting the service
+      ip: 0.0.0.0                     # Container IP
+      port: 18080                     # Container port
+      max_cons: 100000                # Maximum number of connections for the service, defaults to 256*1024 if not specified
+      max_cons_per_ip: 10000          # Connection limit per IP, not limited by default
+      max_request_body_size: 8M     # Maximum request body size, unit can be k, m, g, or kb, mb, gb, etc. (case-insensitive), default is 4M
+      read_buffer_size: 32K            # Read buffer size, default is 4096 bytes
+      filter: # Gateway plugin configuration is done here. Only interfaces configured in router.yaml will execute the corresponding plugins
+        - demo
+client:
+  filter:
+  namespace: Development
+  timeout: 7000
+
+plugins:
+  gateway: # Gateway plugin configuration
+    demo:
+  selector:   # 针对 trpc 框架服务发现的配置
+    polarismesh:  # 北极星服务发现的配置
+      # debug: true                       # 开启 debug 日志
+      # default: true                     # 是否设置为默认的 selector
+      # enable_canary: false              # 开启金丝雀功能，默认 false 不开启
+      # timeout: 1000                     # 单位 ms，默认 1000ms，北极星获取实例接口的超时时间
+      # report_timeout: 1ms               # 默认 1ms，如果设置了，则下游超时，并且少于设置的值，则忽略错误不上报
+      # connect_timeout: 1000             # 单位 ms，默认 1000ms，连接北极星后台服务的超时时间
+      # message_timeout: 1s               # 类型为 time.Duration，从北极星后台接收一个服务信息的超时时间，默认为 1s
+      # log_dir: $HOME/polarismesh/log        # 北极星日志目录
+      protocol: grpc                      # 名字服务远程交互协议类型
+      # join_point: default               # 接入名字服务使用的接入点，该选项会覆盖 address_list 和 cluster_service
+      address_list: 9.135.140.21:8091     # 北极星服务的地址
+  log:
+    default:
+      - writer: console                           # Default console output
+        level: debug                              # Log level for console output
+      - writer: file                                 # Local file log
+        level: debug                                  # Log level for local file rolling log
+        writer_config: # Specific configuration for local file output
+          log_path: .                      # Local file log path
+          filename: trpc.log               # Local file log filename
+          roll_type: size                  # File rolling type, size for size-based rolling
+          max_age: 7                       # Maximum number of days to keep logs
+          max_size: 10                     # Maximum size of rolling log files, in MB
+          max_backups: 10                  # Maximum number of log files
+          compress: false                  # Whether to compress log files

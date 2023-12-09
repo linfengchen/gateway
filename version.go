@@ -11,7 +11,7 @@
 //
 //
 
-package trpc
+package main
 
 import "fmt"
 

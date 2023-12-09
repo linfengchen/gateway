@@ -31,10 +31,10 @@ const fileConfProvider = "file_router"
 
 var (
 	// DefaultRouterConfFile is the default router configuration file, required
-	DefaultRouterConfFile = "../conf/router.yaml"
+	DefaultRouterConfFile = "router.yaml"
 	// DefaultRouterConfDir is the default router configuration directory, multiple files can be stored based on types,
 	// if available, this directory is loaded first, not required
-	DefaultRouterConfDir = "../conf/router.d/"
+	DefaultRouterConfDir = "router.d/"
 )
 
 func init() {

@@ -1,0 +1,24 @@
+router: # Router configuration
+  - method: /greeting # Exact match
+    id: "path:/greeting"
+    target_service: # Upstream service
+      - service: trpcdemo.Hello # Service name, corresponds to the 'name' field in the client configuration
+        weight: 10 # Service weight, sum of weights should not be 0
+        rewrite: /trpcdemo.Hello/Hello
+client: # Upstream service configuration, consistent with the trpc protocol
+  - name: trpcdemo.Hello
+    namespace: Development
+    target: polarismesh://trpcdemo.Hello
+    # env_name: test
+    network: tcp
+    timeout: 8000
+    protocol: trpc
+    disable_servicerouter: true
+    plugins:
+      - name: demo # Service-level plugin
+        props:
+          suid_name: suidxxx
+plugins:
+  - name: demo # Global plugin
+    props:
+      suid_name: suidxxxglobal
