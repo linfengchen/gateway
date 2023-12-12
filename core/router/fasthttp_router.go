@@ -42,6 +42,9 @@ import (
 	"trpc.group/trpc-go/trpc-go/filter"
 	"trpc.group/trpc-go/trpc-go/log"
 	"trpc.group/trpc-go/trpc-go/plugin"
+
+	"github.com/polarismesh/polaris-go"
+	naming "trpc.group/trpc-go/trpc-naming-polarismesh"
 )
 
 // DefaultFastHTTPRouter is the default FastHTTP router
@@ -59,7 +62,8 @@ func init() {
 // FastHTTPRouter is the FastHTTP router
 type FastHTTPRouter struct {
 	opts         *Options // proxy configuration
-	sync.RWMutex          // read-write lock for updating configuration
+	api          polaris.LimitAPI
+	sync.RWMutex // read-write lock for updating configuration
 }
 
 // NewFastHTTPRouter creates a new FastHTTP router
@@ -94,6 +98,17 @@ func (r *FastHTTPRouter) LoadRouterConf(provider string) (err error) {
 	if err != nil {
 		return gerrs.Wrap(err, "load_fast_http_router_err")
 	}
+
+	polarisPlugin, ok := plugin.Get("selector", "polarismesh").(*naming.SelectorFactory)
+	if !ok {
+		return fmt.Errorf("cannot find polarismesh plugin")
+	}
+
+	r.api = polaris.NewLimitAPIByContext(polarisPlugin.GetSDKCtx())
+	if r.api == nil {
+		return fmt.Errorf("palaris limit init failed")
+	}
+
 	return nil
 }
 
@@ -345,6 +360,15 @@ func (r *FastHTTPRouter) GetMatchRouter(ctx context.Context) (*entity.TargetServ
 	routerItem, err := r.getExactRouterItem(fctx, routerItemList)
 	if err != nil {
 		return nil, gerrs.Wrap(err, "get exact router err")
+	}
+
+	// 限速
+	quota := polaris.NewQuotaRequest()
+	quota.SetNamespace("default")
+	quota.SetService("trpcdemo")
+	res, err := r.api.GetQuota(quota)
+	if err == nil && int(res.Get().Code) != 0 {
+		return nil, errs.New(gerrs.ErrLimitSpeed, "speed limit")
 	}
 
 	gwmsg.GwMessage(ctx).WithRouterID(routerItem.ID)

@@ -74,6 +74,8 @@ func generateMethod(pattern string, handler func(ctx context.Context) error) ser
 			fCtx := http.RequestContext(ctx)
 			if terrs.Code(err) != gerrs.ErrPathNotFound {
 				log.ErrorContextf(ctx, "get http router failed:%s,path:%s", err, fCtx.Path())
+				fCtx.SetStatusCode(fasthttp.StatusTooManyRequests)
+				return nil, err
 			}
 			log.Debugf("get http router failed:%s,path:%s", err, fCtx.Path())
 			fCtx.SetStatusCode(fasthttp.StatusNotFound)

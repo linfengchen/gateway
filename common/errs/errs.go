@@ -57,6 +57,9 @@ const (
 
 	// ErrConnClosed Connection pool closed
 	ErrConnClosed = trpcpb.TrpcRetCode(1012)
+
+	// ErrLimitSpeed Access limit speed
+	ErrLimitSpeed = trpcpb.TrpcRetCode(1013)
 )
 
 const (
