@@ -104,6 +104,14 @@ func (r *FastHTTPRouter) LoadRouterConf(provider string) (err error) {
 		return fmt.Errorf("cannot find polarismesh plugin")
 	}
 
+	rateLimit := polarisPlugin.GetSDKCtx().GetConfig().GetProvider().GetRateLimit()
+	if rateLimit != nil {
+		log.Infof("start setting provider")
+		rateLimit.SetEnable(true)
+		rateLimit.SetLimiterNamespace("Polaris")
+		rateLimit.SetLimiterService("polaris.limiter")
+	}
+
 	r.api = polaris.NewLimitAPIByContext(polarisPlugin.GetSDKCtx())
 	if r.api == nil {
 		return fmt.Errorf("palaris limit init failed")

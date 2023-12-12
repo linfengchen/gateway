@@ -6,6 +6,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
 	github.com/armon/go-radix v1.0.0
 	github.com/golang/mock v1.6.0
+	github.com/polarismesh/polaris-go v1.6.0-beta
 	github.com/prashantv/gostub v1.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/valyala/fasthttp v1.45.0
@@ -54,7 +55,6 @@ require (
 	github.com/mitchellh/go-homedir v1.1.0 // indirect
 	github.com/natefinch/lumberjack v2.0.0+incompatible // indirect
 	github.com/panjf2000/ants/v2 v2.4.7 // indirect
-	github.com/polarismesh/polaris-go v1.5.5 // indirect
 	github.com/polarismesh/specification v1.4.1 // indirect
 	github.com/prometheus/client_golang v1.12.2 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
