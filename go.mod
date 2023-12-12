@@ -6,7 +6,7 @@ require (
 	code.cloudfoundry.org/bytefmt v0.0.0-20211005130812-5bb3c17173e5
 	github.com/armon/go-radix v1.0.0
 	github.com/golang/mock v1.6.0
-	github.com/polarismesh/polaris-go v1.6.0-beta
+	github.com/polarismesh/polaris-go v1.5.6
 	github.com/prashantv/gostub v1.1.0
 	github.com/stretchr/testify v1.8.4
 	github.com/valyala/fasthttp v1.45.0
