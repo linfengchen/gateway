@@ -112,6 +112,13 @@ func (r *FastHTTPRouter) LoadRouterConf(provider string) (err error) {
 		rateLimit.SetLimiterService("polaris.limiter")
 	}
 
+	localCache := polarisPlugin.GetSDKCtx().GetConfig().GetConsumer().GetLocalCache()
+	if localCache != nil {
+		log.Infof("start local cache")
+		localCache.SetPersistDir("/app/polaris/backup/")
+		localCache.SetPersistEnable(true)
+	}
+
 	r.api = polaris.NewLimitAPIByContext(polarisPlugin.GetSDKCtx())
 	if r.api == nil {
 		return fmt.Errorf("palaris limit init failed")
