@@ -2,7 +2,8 @@ FROM ccr.ccs.tencentyun.com/dops/alpine:3.9
 
 LABEL maintainer="linfengchen"
 
-RUN apk add tcpdump net-tools busybox-extras && mkdir -p /app
+RUN mkdir -p /app && apk add tcpdump net-tools tzdata && \
+    cp /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && apk del tzdata
 
 WORKDIR /app
 
